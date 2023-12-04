@@ -1,0 +1,6 @@
+@LearnNet_ApiGatewayOcelot_HostAddress = http://localhost:5191
+
+GET {{LearnNet_ApiGatewayOcelot_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
