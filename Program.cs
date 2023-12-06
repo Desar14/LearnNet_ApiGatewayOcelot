@@ -3,6 +3,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using Ocelot.Cache.CacheManager;
 
 namespace LearnNet_ApiGatewayOcelot
 {
@@ -36,7 +37,8 @@ namespace LearnNet_ApiGatewayOcelot
                     // it's recommended to check the type header to avoid "JWT confusion" attacks
                     options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
                 });
-                s.AddOcelot();
+                s.AddOcelot()
+                    .AddCacheManager(x => x.WithDictionaryHandle());
             })
             .ConfigureLogging((hostingContext, logging) =>
             {
