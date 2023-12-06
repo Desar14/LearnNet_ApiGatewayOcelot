@@ -209,6 +209,20 @@
       ],
       "UpstreamPathTemplate": "/swagger/cart/{everything}",
       "UpstreamHttpMethod": [ "Get" ]
+    },
+
+    //Auth
+    {
+      "DownstreamPathTemplate": "/connect/token",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5001
+        }
+      ],
+      "UpstreamPathTemplate": "/connect/token",
+      "UpstreamHttpMethod": [ "Post" ]
     }
   ],
   "Aggregates": [
