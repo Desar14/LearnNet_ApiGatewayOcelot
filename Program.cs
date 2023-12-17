@@ -13,32 +13,44 @@ namespace LearnNet_ApiGatewayOcelot
         {
             var builder = WebHost.CreateDefaultBuilder(args);
 
-            var authConfiguration = new ConfigurationBuilder()
+            var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
+                .AddJsonFile("ocelot.json")
                 .Build();
 
-            builder.ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                config.AddJsonFile("ocelot.json");
-                    
-            });
+            //builder.ConfigureAppConfiguration((hostingContext, config) =>
+            //{
+            //    config.AddJsonFile("ocelot.json");                    
+            //});
+
+            builder.UseConfiguration(configuration);
+
             builder.ConfigureServices(s =>
             {
                 var authenticationProviderKey = "admin_restriction";
                 s.AddAuthentication()
                 .AddJwtBearer(authenticationProviderKey, options =>
                 {
-                    options.Authority = authConfiguration["JWT:ValidIssuer"];
+                    options.Authority = configuration["JWT:ValidIssuer"];
 
 
                     options.TokenValidationParameters.ValidateAudience = true;
-                    options.TokenValidationParameters.ValidAudiences = authConfiguration.GetSection("JWT:ValidAudience").Get<List<string>>();
+                    options.TokenValidationParameters.ValidAudiences = configuration.GetSection("JWT:ValidAudience").Get<List<string>>();
 
                     // it's recommended to check the type header to avoid "JWT confusion" attacks
                     options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
                 });
+
+                s.AddEndpointsApiExplorer();
                 s.AddOcelot()
                     .AddCacheManager(x => x.WithDictionaryHandle());
+                s.AddSwaggerGen();
+                s.AddSwaggerForOcelot(configuration,
+                  (o) =>
+                  {
+                      o.GenerateDocsForAggregates = true;
+                  });
+
             })
             .ConfigureLogging((hostingContext, logging) =>
             {
@@ -46,7 +58,15 @@ namespace LearnNet_ApiGatewayOcelot
             })
             .UseIISIntegration()
             .Configure(app =>
-            {
+            {                
+                app.UseSwaggerForOcelotUI(opt =>
+                {
+                    opt.PathToSwaggerGenerator = "/swagger/docs";
+                }, 
+                uiOpt => {
+                    uiOpt.DocumentTitle = "Gateway documentation";
+                });
+
                 app.UseOcelot().Wait();
             });
             
