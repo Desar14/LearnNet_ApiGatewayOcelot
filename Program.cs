@@ -18,11 +18,6 @@ namespace LearnNet_ApiGatewayOcelot
                 .AddJsonFile("ocelot.json")
                 .Build();
 
-            //builder.ConfigureAppConfiguration((hostingContext, config) =>
-            //{
-            //    config.AddJsonFile("ocelot.json");                    
-            //});
-
             builder.UseConfiguration(configuration);
 
             builder.ConfigureServices(s =>
